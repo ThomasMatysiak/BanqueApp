@@ -43,26 +43,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     templateUrl: './templates/create-account.html',
     controller: 'CreateAccountCtrl'
   })
-  .state('movies-list', {
-    url: '/movies-list',
-    templateUrl: './templates/movies-list.html',
-    controller: 'MoviesListCtrl'
+  .state('evenements', {
+    url: '/evenements',
+    templateUrl: './templates/evenements.html',
+    controller: 'EvenementsCtrl'
   })
-  .state('search', {
-    url: '/search',
-    templateUrl: 'templates/search.html',
-    controller: 'SearchCtrl'
+  .state('create-event', {
+    url: '/create-event',
+    templateUrl: './templates/create-event.html',
+    controller: 'CreateEventCtrl'
   })
-  .state('movie-details', {
-    url: '/movie-details/:id',
-    templateUrl: './templates/movie-details.html',
-    controller: 'MovieDetailsCtrl'
-  })
-  .state('favoris-list', {
-    url: '/favoris',
-    templateUrl: './templates/favoris-list.html',
-    controller: 'FavorisListCtrl'
-  });
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/login');

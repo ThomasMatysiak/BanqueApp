@@ -1,0 +1,13 @@
+<ion-view view-title="Evenements" name="evenements-view">
+    <div class="bar bar-subheader" style="justify-content: space-between;">
+        <div class="button-bar">
+            <div class="subheader-item" ng-click="showAlert()" style="cursor: pointer;">{{ user.username }}</div>
+        </div>
+    </div>
+    <ion-content class="padding" style="margin-top: 50px; margin-bottom: 50px;">
+        Pas d'évènements dans la liste
+    </ion-content>
+    <div class="bar bar-footer">
+        <a ng-click="goToCreateEvent()" class="button button-large button-icon icon-right ion-android-add-circle" style="position: absolute; margin-right: 5px; right: 0; bottom: 10px"></a>
+    </div>
+</ion-view>

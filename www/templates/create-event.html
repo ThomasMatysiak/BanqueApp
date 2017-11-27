@@ -1,0 +1,26 @@
+<ion-view view-title="Créer un evenement" name="create-event-view">
+    <div class="bar bar-subheader" style="justify-content: space-between;">
+        <div class="button-bar">
+            <div class="subheader-item" ng-click="showAlert()" style="cursor: pointer;">{{ user.username }}</div>
+        </div>
+    </div>
+    <ion-content class="padding" style="margin-top: 50px; margin-bottom: 50px;">
+        <div class="list">
+            <label class="item item-input">
+                <span class="input-label">Titre : </span>
+                <input type="text" ng-model="titreEvent">
+            </label>
+            <label class="item item-input">
+                <span class="input-label">Début</span>
+                <input type="date" ng-model="dateDebutEvent">
+            </label>
+            <label class="item item-input">
+                <span class="input-label">Fin</span>
+                <input type="date" ng-model="dateFinEvent">
+            </label>
+        </div>
+        <button ng-click="createEvent()" class="button button-block button-balanced">
+            Créer l'évènement
+        </button>
+    </ion-content>
+</ion-view>

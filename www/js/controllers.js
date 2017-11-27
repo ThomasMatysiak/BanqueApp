@@ -16,7 +16,7 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
      }).then(function mySuccess(response) {
         console.log(response);
         SessionService.set('userInfo', response.data[0]);
-        //$state.go('movies-list');
+        $state.go('evenements');
         $scope.data = {
           password: null,
           username: null
@@ -42,19 +42,6 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   $scope.errorUnexpected = false;
   $scope.errorUsername = false;
   $scope.errorCreate = false;
-
-  $scope.login = function(username, password) {
-       $http({
-          method : "GET",
-          url : "http://localhost:8080/api/user/" + username + "/" + password
-       }).then(function mySuccess(response) {
-          SessionService.set('userInfo', response.data[0]);
-       }, function myError(response) {
-          $scope.errorLogin = true;
-          console.log(response);
-          $timeout(function () { $scope.errorLogin = false; }, 3000);
-      });
-    }
 
   $scope.save = function() {
     if ($scope.data.password !== $scope.data.confirmPassword) {
@@ -83,4 +70,57 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
       });
     }
   }
+})
+.controller('EvenementsCtrl', function($scope, $state, $http, $ionicScrollDelegate, SessionService, $ionicPopup) {
+  $scope.user = SessionService.get('userInfo');
+  $scope.alertPopup = null;
+
+
+  $scope.loadEvent = function() {
+
+  };
+
+  $scope.disconnect = function() {
+    $scope.alertPopup.close();
+    SessionService.destroy("userInfo");
+    $state.go("login");
+  };
+
+  $scope.showAlert = function() {
+    $scope.alertPopup = $ionicPopup.alert({
+      title: '<div class="popup-title">Utilisateur</div>',
+      scope: $scope,
+      template: '<ul class="list"><li class="item popup-item" ng-click="goToProfil()">Mon profil</li><li class="item popup-item" ng-click="disconnect()">Deconnexion</li></ul>'
+    });
+  };
+
+  $scope.goToCreateEvent = function() {
+    $state.go('create-event');
+  };
+})
+.controller('CreateEventCtrl', function($scope, $state, $http, $ionicScrollDelegate, SessionService, $ionicPopup) {
+  $scope.user = SessionService.get('userInfo');
+  $scope.alertPopup = null;
+  $scope.dateDebutEvent = null;
+  $scope.dateFinEvent = null;
+  $scope.titreEvent = null;
+
+  $scope.disconnect = function() {
+    $scope.alertPopup.close();
+    SessionService.destroy("userInfo");
+    $state.go("login");
+  };
+
+  $scope.showAlert = function() {
+    $scope.alertPopup = $ionicPopup.alert({
+      title: '<div class="popup-title">Utilisateur</div>',
+      scope: $scope,
+      template: '<ul class="list"><li class="item popup-item" ng-click="goToProfil()">Mon profil</li><li class="item popup-item" ng-click="disconnect()">Deconnexion</li></ul>'
+    });
+  };
+
+  $scope.createEvent = function() {
+
+  };
+
 });
