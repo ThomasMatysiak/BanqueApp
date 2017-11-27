@@ -10,8 +10,9 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   var found = false;
 
   $scope.login = function() {
+    console.log("JE SUIS LA");
      $http({
-        method : "POST",
+        method : "GET",
         url : "http://localhost:8080/api/user/" + $scope.data.username + "/" + $scope.data.password
      }).then(function mySuccess(response) {
         console.log(response);
