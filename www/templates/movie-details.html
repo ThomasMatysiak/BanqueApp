@@ -1,0 +1,51 @@
+<ion-view view-title="Details" name="movies-list-view">
+  <div class="bar bar-subheader" style="justify-content: space-between;">
+    <div class="button-bar">
+      <div class="subheader-item" ng-click="goToSearch()">Rechercher</div>
+      <div class="subheader-item" ng-click="goToSuggestions()">Suggestions</div>
+      <div class="subheader-item" ng-click="showAlert()">{{ user.login }}</div>
+    </div>
+  </div>
+  <ion-content class="padding" style="margin-top: 50px; margin-bottom: 50px;">
+    <div class="list card">
+      <div class="item item-avatar">
+        <img ng-if="movieDetails.poster_path != null" ng-src="https://image.tmdb.org/t/p/w75/{{movieDetails.poster_path}}" ng-cloak />
+        <img ng-if="movieDetails.poster_path == null" ng-src="../img/notfound_small.png" ng-cloak />
+        <h2 class="movie-details-title">{{ movieDetails.title }}</h2>
+        <p>Sortie : {{ movieDetails.release_date | date:'dd/MM/yyyy'}}</p>
+        <div>
+          <button class="button button-balanced button-block" ng-click="addFavoris(movieDetails)">
+            <ion-icon class="ion-ios-star-outline" style="vertical-align: middle; font-size: 24px;"></ion-icon>
+          </button>
+        </div>
+      </div>
+      <div class="item item-divider">
+        Genres
+      </div>
+      <div class="item item-text-wrap" ng-repeat="movieGenre in movieDetails.genres" style="text-align: justify;">
+        {{ movieGenre.name }}
+      </div>
+      <div class="item item-divider">
+        Description
+      </div>
+      <div class="item item-text-wrap" style="text-align: justify;">
+        {{ movieDetails.overview }}
+      </div>
+      <div class="item item-divider">
+        Notation
+      </div>
+      <div class="item item-text-wrap" style="text-align: justify;">
+        Note : {{ movieDetails.vote_average}}
+      </div>
+      <div class="item item-text-wrap" style="text-align: justify;">
+        Nombre de vote : {{ movieDetails.vote_count}}
+      </div>
+      <div class="item item-divider">
+        Production
+      </div>
+      <div class="item item-text-wrap" ng-repeat="companie in movieDetails.production_companies" style="text-align: justify;">
+        {{ companie.name }}
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
