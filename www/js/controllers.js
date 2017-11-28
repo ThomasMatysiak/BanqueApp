@@ -112,7 +112,7 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   };
 
   $scope.goToDetail = function(id) {
-
+    $state.go('event-details', {idEvent : id});
   };
 
   $scope.$on('$ionicView.enter', function() {
@@ -178,5 +178,59 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
         $timeout(function () { $scope.errorCreate = false; }, 3000);
     });
   };
+
+})
+.controller('EventDetailsCtrl', function($scope, $state, $stateParams, $http, $ionicScrollDelegate, SessionService, $ionicPopup, $ionicHistory) {
+  $scope.user = SessionService.get('userInfo');
+  $scope.alertPopup = null;
+  $scope.eventDetails = null;
+  $scope.depenses = null;
+
+  $scope.disconnect = function() {
+    $scope.alertPopup.close();
+    SessionService.destroy("userInfo");
+    $ionicHistory.nextViewOptions({
+        disableBack: true
+    });
+    $state.go("login");
+  };
+
+  $scope.showAlert = function() {
+    $scope.alertPopup = $ionicPopup.alert({
+      title: '<div class="popup-title">Utilisateur</div>',
+      scope: $scope,
+      template: '<ul class="list"><li class="item popup-item" ng-click="goToProfil()">Mon profil</li><li class="item popup-item" ng-click="disconnect()">Deconnexion</li></ul>'
+    });
+  };
+
+  $scope.loadEventDetails = function() {
+    $http({
+        method : "GET",
+        url : "http://localhost:8080/api/event/" + $stateParams.idEvent + "/details",
+    }).then(
+        function mySuccess(response) {
+            $scope.event = response.data[0];
+        }, function myError(response) {
+        }
+    );
+  };
+
+  $scope.loadDepenses = function() {
+    $http({
+          method : "GET",
+          url : "http://localhost:8080/api/event/" + $stateParams.idEvent + "/depenses",
+    }).then(
+        function mySuccess(response) {
+            $scope.depenses = response.data;
+            console.log(response.data);
+        }, function myError(response) {
+        }
+    );
+  }
+
+  $scope.$on('$ionicView.enter', function() {
+      $scope.loadEventDetails();
+      $scope.loadDepenses();
+  });
 
 });

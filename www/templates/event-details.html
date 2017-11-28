@@ -1,0 +1,36 @@
+<ion-view view-title="Details" name="event-details-view">
+    <div class="bar bar-subheader" style="justify-content: space-between;">
+        <div class="button-bar">
+            <div class="subheader-item" ng-click="showAlert()" style="cursor: pointer;text-align: center;width: 100%;">{{ user.username }}</div>
+        </div>
+    </div>
+    <ion-content class="padding" style="margin-top: 50px; margin-bottom: 50px;">
+        <div class="list">
+            <div class="item item-divider">
+                Informations de l'évènement
+            </div>
+            <div class="item" ng-cloak>
+                Titre : {{ event.titre }}
+            </div>
+            <div class="item" ng-cloak>
+                Date de début : {{ event.dateDebut }}
+            </div>
+            <div class="item" ng-cloak>
+                Date de fin : {{ event.dateFin }}
+            </div>
+            <div class="item" ng-cloak>
+                Total dépense : {{ event.totalDepense }}
+            </div>
+            <button ng-if="event.idCreateur == user.id" class="button button-block button-assertive">
+                Clôturer l'évènement
+            </button>
+
+            <div class="item item-divider">
+                Historique des dépenses
+            </div>
+            <div class="item" ng-cloak>
+                Date de début : {{ event.dateDebut }}
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
