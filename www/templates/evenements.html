@@ -1,11 +1,20 @@
 <ion-view view-title="Evenements" name="evenements-view">
     <div class="bar bar-subheader" style="justify-content: space-between;">
         <div class="button-bar">
-            <div class="subheader-item" ng-click="showAlert()" style="cursor: pointer;">{{ user.username }}</div>
+            <div class="subheader-item" ng-click="showAlert()" style="cursor: pointer;text-align: center;width: 100%;">{{ user.username }}</div>
         </div>
     </div>
     <ion-content class="padding" style="margin-top: 50px; margin-bottom: 50px;">
-        Pas d'évènements dans la liste
+        <ul class="list" ng-if="events.length > 0" ng-cloak>
+            <li style="cursor: pointer;" class="item item-icon-right" ng-repeat="event in events" ng-click="goToDetail(event.id)">
+                {{ event.titre }}
+                <span ng-if="event.idCreateur == user.id" style="color: green;"> - [Créateur]</span>
+                <i class="icon ion-arrow-right-c"></i>
+            </li>
+        </ul>
+        <div ng-if="events.length == 0" ng-cloak>
+            Pas d'évènement en cours
+        </div>
     </ion-content>
     <div class="bar bar-footer">
         <a ng-click="goToCreateEvent()" class="button button-large button-icon icon-right ion-android-add-circle" style="position: absolute; margin-right: 5px; right: 0; bottom: 10px"></a>

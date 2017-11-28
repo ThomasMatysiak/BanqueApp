@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['ui.router', 'ionic'])
 
-.controller('LoginCtrl', function($scope, $state, $http, $timeout, UserService, SessionService) {
+.controller('LoginCtrl', function($scope, $state, $http, $timeout, UserService, SessionService, $ionicHistory) {
   $scope.data = {
     password: null,
     username: null
@@ -16,6 +16,9 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
      }).then(function mySuccess(response) {
         console.log(response);
         SessionService.set('userInfo', response.data[0]);
+        $ionicHistory.nextViewOptions({
+            disableBack: true
+        });
         $state.go('evenements');
         $scope.data = {
           password: null,
@@ -52,7 +55,7 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
       $http({
           method : "POST",
           url : "http://localhost:8080/api/user/create",
-                           data : JSON.stringify({
+          data : JSON.stringify({
             "username" : $scope.data.username,
             "password" : $scope.data.password
           })
@@ -71,18 +74,28 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
     }
   }
 })
-.controller('EvenementsCtrl', function($scope, $state, $http, $ionicScrollDelegate, SessionService, $ionicPopup) {
+.controller('EvenementsCtrl', function($scope, $state, $http, $ionicScrollDelegate, SessionService, $ionicPopup, $ionicHistory) {
   $scope.user = SessionService.get('userInfo');
   $scope.alertPopup = null;
-
+  $scope.events = null;
 
   $scope.loadEvent = function() {
-
+      $http({
+          method : "GET",
+          url : "http://localhost:8080/api/event/" + $scope.user.id,
+      }).then(function mySuccess(response) {
+          $scope.events = response.data
+          console.log(response.data);
+      }, function myError(response) {
+      });
   };
 
   $scope.disconnect = function() {
     $scope.alertPopup.close();
     SessionService.destroy("userInfo");
+    $ionicHistory.nextViewOptions({
+        disableBack: true
+    });
     $state.go("login");
   };
 
@@ -95,19 +108,34 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   };
 
   $scope.goToCreateEvent = function() {
-    $state.go('create-event');
+    $state.go('create-event', null, {reload: true});
   };
+
+  $scope.goToDetail = function(id) {
+
+  };
+
+  $scope.$on('$ionicView.enter', function() {
+      $scope.loadEvent();
+  });
+
 })
-.controller('CreateEventCtrl', function($scope, $state, $http, $ionicScrollDelegate, SessionService, $ionicPopup) {
+.controller('CreateEventCtrl', function($scope, $state, $http, $ionicScrollDelegate, SessionService, $ionicPopup, $timeout, $ionicHistory) {
   $scope.user = SessionService.get('userInfo');
+  $scope.errorCreate = false;
   $scope.alertPopup = null;
-  $scope.dateDebutEvent = null;
-  $scope.dateFinEvent = null;
-  $scope.titreEvent = null;
+  $scope.data = {
+    titreEvent: null,
+    dateDebutEvent: null,
+    dateFinEvent: null
+  };
 
   $scope.disconnect = function() {
     $scope.alertPopup.close();
     SessionService.destroy("userInfo");
+    $ionicHistory.nextViewOptions({
+        disableBack: true
+    });
     $state.go("login");
   };
 
@@ -119,8 +147,36 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
     });
   };
 
-  $scope.createEvent = function() {
+  function convertToDate(str) {
+    var date = new Date(str);
+    var mm = date.getMonth() + 1;
+    var dd = date.getDate();
 
+    return (dd>9 ? '' : '0') + dd + "/" + (mm>9 ? '' : '0') + mm + "/" + date.getFullYear()
+  }
+  $scope.createEvent = function() {
+    $http({
+        method : "POST",
+        url : "http://localhost:8080/api/event/create",
+        data : JSON.stringify({
+          "idCreateur" : $scope.user.id,
+          "title" : $scope.data.titreEvent,
+          "dateDebut" : convertToDate($scope.data.dateDebutEvent),
+          "dateFin" : convertToDate($scope.data.dateFinEvent)
+        })
+    }).then(function mySuccess(response) {
+        $scope.data.titreEvent = null;
+        $scope.data.dateDebutEvent = null;
+        $scope.data.dateFinEvent = null;
+        $ionicHistory.nextViewOptions({
+            disableBack: true
+        });
+        $state.go('evenements');
+
+    }, function myError(response) {
+        $scope.errorCreate = true;
+        $timeout(function () { $scope.errorCreate = false; }, 3000);
+    });
   };
 
 });
