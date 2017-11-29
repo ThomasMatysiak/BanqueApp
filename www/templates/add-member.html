@@ -1,0 +1,19 @@
+<ion-view view-title="Ajouter un participant" name="add-member-view">
+    <div class="bar bar-subheader" style="justify-content: space-between;">
+        <div class="button-bar">
+            <div class="subheader-item" ng-click="showAlert()" style="cursor: pointer;text-align: center;width: 100%;">{{ user.username }}</div>
+        </div>
+    </div>
+    <ion-content class="padding" style="margin-top: 50px; margin-bottom: 50px;">
+        <div class="list">
+            <label class="item item-input">
+                <span class="input-label">Utilisateur : </span>
+                <input type="text" ng-model="data.username" />
+            </label>
+        </div>
+        <button ng-click="addParticipant()" class="button button-block button-balanced">
+            Ajouter
+        </button>
+        <div ng-show="errorAdd" class="errorText">Ce membre n'existe pas</div>
+    </ion-content>
+</ion-view>

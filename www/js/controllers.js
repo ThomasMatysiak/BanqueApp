@@ -14,7 +14,6 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
         method : "GET",
         url : "http://localhost:8080/api/user/" + $scope.data.username + "/" + $scope.data.password
      }).then(function mySuccess(response) {
-        console.log(response);
         SessionService.set('userInfo', response.data[0]);
         $ionicHistory.nextViewOptions({
             disableBack: true
@@ -26,7 +25,6 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
         };
      }, function myError(response) {
         $scope.errorLogin = true;
-        console.log(response);
         $timeout(function () { $scope.errorLogin = false; }, 3000);
     });
   }
@@ -85,7 +83,6 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
           url : "http://localhost:8080/api/event/" + $scope.user.id,
       }).then(function mySuccess(response) {
           $scope.events = response.data
-          console.log(response.data);
       }, function myError(response) {
       });
   };
@@ -185,6 +182,7 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   $scope.alertPopup = null;
   $scope.eventDetails = null;
   $scope.depenses = null;
+  $scope.idEvent = $stateParams.idEvent;
 
   $scope.disconnect = function() {
     $scope.alertPopup.close();
@@ -222,15 +220,159 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
     }).then(
         function mySuccess(response) {
             $scope.depenses = response.data;
-            console.log(response.data);
+            for (var i = 0; i < $scope.depenses.length; i++) {
+                var participants = $scope.depenses[i].participants.split("%");
+                $scope.depenses[i].splitted = participants;
+            }
         }, function myError(response) {
         }
     );
-  }
+  };
+
+  $scope.addMember = function(id) {
+    $state.go("add-member", {idEvent : id});
+  };
+
+  $scope.addDepense = function() {
+    $state.go("add-depense", {idEvent : $scope.idEvent});
+  };
+
+  $scope.closeEvent = function() {
+
+  };
 
   $scope.$on('$ionicView.enter', function() {
       $scope.loadEventDetails();
       $scope.loadDepenses();
   });
 
+})
+.controller('AddMemberCtrl', function($scope, $state, $stateParams, $http, $ionicScrollDelegate, SessionService, $ionicPopup, $ionicHistory, $timeout) {
+  $scope.user = SessionService.get('userInfo');
+  $scope.alertPopup = null;
+  $scope.errorAdd = false;
+  $scope.idEvent = $stateParams.idEvent;
+  $scope.data = {
+    username: null,
+  };
+
+  $scope.disconnect = function() {
+    $scope.alertPopup.close();
+    SessionService.destroy("userInfo");
+    $ionicHistory.nextViewOptions({
+        disableBack: true
+    });
+    $state.go("login");
+  };
+
+  $scope.showAlert = function() {
+    $scope.alertPopup = $ionicPopup.alert({
+      title: '<div class="popup-title">Utilisateur</div>',
+      scope: $scope,
+      template: '<ul class="list"><li class="item popup-item" ng-click="goToProfil()">Mon profil</li><li class="item popup-item" ng-click="disconnect()">Deconnexion</li></ul>'
+    });
+  };
+
+  $scope.addParticipant = function() {
+    $http({
+       method : "POST",
+       url : "http://localhost:8080/api/user/addEvent/" + $scope.idEvent,
+       data : JSON.stringify({
+           "username" : $scope.data.username
+       })
+    }).then(function mySuccess(response) {
+       $state.go('event-details', {idEvent : $scope.idEvent});
+       $scope.data = {
+         username: null
+       };
+    }, function myError(response) {
+       $scope.errorAdd = true;
+       $timeout(function () { $scope.errorAdd = false; }, 3000);
+    });
+  };
+
+})
+.controller('AddDepenseCtrl', function($scope, $state, $stateParams, $http, $ionicScrollDelegate, SessionService, $ionicPopup, $ionicHistory, $timeout) {
+  $scope.user = SessionService.get('userInfo');
+  $scope.alertPopup = null;
+  $scope.idEvent = $stateParams.idEvent;
+  $scope.errorAdd = false;
+  $scope.data = {
+    montantDepense: null,
+    libelle: null
+  };
+  $scope.members = null;
+
+  $scope.disconnect = function() {
+    $scope.alertPopup.close();
+    SessionService.destroy("userInfo");
+    $ionicHistory.nextViewOptions({
+        disableBack: true
+    });
+    $state.go("login");
+  };
+
+  $scope.showAlert = function() {
+    $scope.alertPopup = $ionicPopup.alert({
+      title: '<div class="popup-title">Utilisateur</div>',
+      scope: $scope,
+      template: '<ul class="list"><li class="item popup-item" ng-click="goToProfil()">Mon profil</li><li class="item popup-item" ng-click="disconnect()">Deconnexion</li></ul>'
+    });
+  };
+
+  $scope.getMemberEvent = function() {
+    $http({
+          method : "GET",
+          url : "http://localhost:8080/api/event/" + $stateParams.idEvent + "/member/" + $scope.user.id,
+    }).then(
+        function mySuccess(response) {
+            $scope.members = response.data
+            for (var i = 0; i < $scope.members.length; i++) {
+                $scope.members[i].checked = false;
+            }
+        }, function myError(response) {
+        }
+    );
+  };
+
+  $scope.addDepense = function() {
+      $http({
+          method : "POST",
+          url : "http://localhost:8080/api/event/depense",
+          data : JSON.stringify({
+            "idUtilisateur" : $scope.user.id,
+            "idEvent" : $stateParams.idEvent,
+            "libelle" : $scope.data.libelle,
+            "date" : getTodayDate(),
+            "montantDepense" : $scope.data.montantDepense,
+            "participants" : getParticipantsFormat()
+          })
+      }).then(function mySuccess(response) {
+          if (response.status == 226) {
+            $scope.errorUsername = true;
+            $timeout(function () { $scope.errorUsername = false; }, 3000);
+          }
+          else {
+            $state.go('login');
+          }
+         }, function myError(response) {
+           $scope.errorCreate = true;
+           $timeout(function () { $scope.errorCreate = false; }, 3000);
+      });
+  };
+
+  function getParticipantsFormat() {
+
+  }
+
+  function getTodayDate() {
+    var date = new Date();
+    var mm = date.getMonth() + 1;
+    var dd = date.getDate();
+
+    return (dd>9 ? '' : '0') + dd + "/" + (mm>9 ? '' : '0') + mm + "/" + date.getFullYear()
+  }
+  $scope.$on('$ionicView.enter', function() {
+      $scope.getMemberEvent();
+  });
 });

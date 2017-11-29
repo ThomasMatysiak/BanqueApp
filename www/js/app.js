@@ -61,6 +61,22 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         idEvent: null
     }
   })
+  .state('add-member', {
+    url: '/add-member',
+    templateUrl: './templates/add-member.html',
+    controller: 'AddMemberCtrl',
+    params: {
+        idEvent: null
+    }
+  })
+  .state('add-depense', {
+    url: '/add-depense',
+    templateUrl: './templates/add-depense.html',
+    controller: 'AddDepenseCtrl',
+    params: {
+        idEvent: null
+    }
+  })
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/login');

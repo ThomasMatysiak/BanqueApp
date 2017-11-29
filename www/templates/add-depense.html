@@ -1,0 +1,26 @@
+<ion-view view-title="Ajouter une dépense" name="add-depense-view">
+    <div class="bar bar-subheader" style="justify-content: space-between;">
+        <div class="button-bar">
+            <div class="subheader-item" ng-click="showAlert()" style="cursor: pointer;text-align: center;width: 100%;">{{ user.username }}</div>
+        </div>
+    </div>
+    <ion-content class="padding" style="margin-top: 50px; margin-bottom: 50px;">
+        <div class="list">
+            <label class="item item-input">
+                <span class="input-label">Libellé : </span>
+                <input type="text" ng-model="data.libelle" />
+            </label>
+            <label class="item item-input">
+                <span class="input-label">Montant : </span>
+                <input type="number" min="0" ng-model="data.montantDepense" />
+            </label>
+            <ion-list>
+                <ion-checkbox ng-repeat="member in members" ng-model="member.checked">{{ member.username }}</ion-checkbox>
+            </ion-list>
+        </div>
+        <button ng-click="addDepense()" class="button button-block button-balanced">
+            Ajouter
+        </button>
+        <div ng-show="errorAdd" class="errorText">Problème lors de l'ajout</div>
+    </ion-content>
+</ion-view>

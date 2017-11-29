@@ -19,17 +19,30 @@
                 Date de fin : {{ event.dateFin }}
             </div>
             <div class="item" ng-cloak>
-                Total dépense : {{ event.totalDepense }}
+                Nombre participants : {{ event.nbparticipants }}
             </div>
-            <button ng-if="event.idCreateur == user.id" class="button button-block button-assertive">
+            <div class="item" ng-cloak>
+                Total dépense : {{ event.totalDepense }}€
+            </div>
+            <button ng-click="addMember({{event.id}})" ng-if="event.idCreateur == user.id" class="button button-block button-balanced" ng-cloak>
+                Ajouter un participant
+            </button>
+            <button ng-click="addDepense({{event.id}})" class="button button-block button-positive" ng-cloak>
+                Ajouter une dépense
+            </button>
+            <button ng-click="closeEvent()" ng-if="event.idCreateur == user.id" class="button button-block button-assertive" ng-cloak>
                 Clôturer l'évènement
             </button>
 
             <div class="item item-divider">
                 Historique des dépenses
             </div>
-            <div class="item" ng-cloak>
-                Date de début : {{ event.dateDebut }}
+            <div class="item" ng-if="depenses.length == 0" ng-cloak>
+                Pas de dépense actuellement
+            </div>
+            <div class="item" ng-if="depenses.length > 0" ng-repeat="depense in depenses" ng-cloak>
+                <div><span style="font-weight: bold;">{{ depense.payeur }}</span> paie <span style="font-weight: bold;">{{ depense.montantDepense}}€</span></div>
+                <div>pour <span style="font-weight: bold;" ng-repeat="splitPart in depense.splitted">{{ splitPart.split('/')[0] }} </span></div>
             </div>
         </div>
     </ion-content>
