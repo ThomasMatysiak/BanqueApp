@@ -42,8 +42,8 @@
             </div>
             <div class="item" ng-if="depenses.length > 0" ng-repeat="depense in depenses" ng-class="{'lastElement':$last}" ng-cloak>
                 <div style="border-bottom: 1px solid grey; margin-bottom: 5px;"><span style="font-style: italic; color: grey;">{{ depense.libelle }}</span></div>
-                <div><span style="font-weight: bold;">{{ depense.payeur }}</span> paie <span style="font-weight: bold;">{{ depense.montantDepense}}€</span></div>
-                <div>pour <span style="font-weight: bold;" ng-repeat="splitPart in depense.splitted">{{ splitPart.split('/')[0] }} </span></div>
+                <div><span style="font-weight: bold;">{{ depense.payeur }}</span> paie <span style="font-weight: bold;">{{ depense.montantDepense}}€ </span>pour</div>
+                <div><span style="font-weight: bold;" ng-repeat="splitPart in depense.splitted">{{ splitPart.split('/')[0] }} </span></div>
             </div>
         </div>
     </ion-content>

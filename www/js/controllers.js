@@ -14,6 +14,7 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
         method : "GET",
         url : "http://localhost:8080/api/user/" + $scope.data.username + "/" + $scope.data.password
      }).then(function mySuccess(response) {
+        SessionService.destroy("userInfo");
         SessionService.set('userInfo', response.data[0]);
         $ionicHistory.nextViewOptions({
             disableBack: true
@@ -302,6 +303,7 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   $scope.idEvent = $stateParams.idEvent;
   $scope.errorAdd = false;
   $scope.errorForm = false;
+  $scope.errorNoMembers = false;
   $scope.data = {
     montantDepense: null,
     libelle: null
@@ -341,7 +343,11 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   };
 
   $scope.addDepense = function() {
-      if ($scope.data.libelle == null || $scope.data.montantDepense == null || !isParticipantsSelected()) {
+      if ($scope.members.length == 0) {
+            $scope.errorNoMembers = true;
+            $timeout(function () { $scope.errorNoMembers = false; }, 3000);
+      }
+      else if ($scope.data.libelle == null || $scope.data.montantDepense == null || !isParticipantsSelected()) {
             $scope.errorForm = true;
             $timeout(function () { $scope.errorForm = false; }, 3000);
       }
