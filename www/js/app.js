@@ -77,6 +77,14 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         idEvent: null
     }
   })
+  .state('event-balance', {
+    url: '/event-balance',
+    templateUrl: './templates/event-balance.html',
+    controller: 'EventBalanceCtrl',
+    params: {
+        idEvent: null
+    }
+  });
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/login');

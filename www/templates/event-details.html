@@ -4,7 +4,7 @@
             <div class="subheader-item" ng-click="showAlert()" style="cursor: pointer;text-align: center;width: 100%;">{{ user.username }}</div>
         </div>
     </div>
-    <ion-content class="padding" style="margin-top: 50px; margin-bottom: 50px;">
+    <ion-content class="padding" style="margin-top: 50px;">
         <div class="list">
             <div class="item item-divider">
                 Informations de l'évènement
@@ -40,10 +40,15 @@
             <div class="item" ng-if="depenses.length == 0" ng-cloak>
                 Pas de dépense actuellement
             </div>
-            <div class="item" ng-if="depenses.length > 0" ng-repeat="depense in depenses" ng-cloak>
+            <div class="item" ng-if="depenses.length > 0" ng-repeat="depense in depenses" ng-class="{'lastElement':$last}" ng-cloak>
+                <div style="border-bottom: 1px solid grey; margin-bottom: 5px;"><span style="font-style: italic; color: grey;">{{ depense.libelle }}</span></div>
                 <div><span style="font-weight: bold;">{{ depense.payeur }}</span> paie <span style="font-weight: bold;">{{ depense.montantDepense}}€</span></div>
                 <div>pour <span style="font-weight: bold;" ng-repeat="splitPart in depense.splitted">{{ splitPart.split('/')[0] }} </span></div>
             </div>
         </div>
     </ion-content>
+    <div class="bar bar-footer" style="padding: 0 0 0 0;display:table;height:35px !important;">
+        <div style="cursor:pointer;font-weight: bold;width: 50%;background-color: lightgrey;text-align: center;vertical-align: middle;display: table-cell;"><i class="icon ion-clipboard"></i></div>
+        <div ng-click="goToBalance()" style="cursor:pointer;font-weight: bold;width: 50%;text-align: center;vertical-align: middle;display: table-cell;"><i class="icon ion-shuffle"></i></div>
+    </div>
 </ion-view>

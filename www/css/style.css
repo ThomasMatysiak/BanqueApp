@@ -127,3 +127,7 @@
   color: #11c1f3 !important;
   text-align: center !important;
 }
+
+.lastElement {
+    margin-bottom: 50px;
+}
