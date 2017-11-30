@@ -243,7 +243,7 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   };
 
   $scope.goToBalance = function() {
-    $state.go("event-balance", {idEvent : $scope.idEvent})
+    $state.go("event-balance", {idEvent : $scope.idEvent, idCreateur: $scope.event.idCreateur})
   };
 
   $scope.$on('$ionicView.enter', function() {
@@ -413,7 +413,10 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   $scope.alertPopup = null;
   $scope.eventDetails = null;
   $scope.depenses = null;
+  $scope.members = null;
+  $scope.balanceLoaded = false;
   $scope.idEvent = $stateParams.idEvent;
+  $scope.idCreateur = $stateParams.idCreateur;
 
   $scope.disconnect = function() {
     $scope.alertPopup.close();
@@ -441,8 +444,52 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
             $scope.depenses = response.data;
             for (var i = 0; i < $scope.depenses.length; i++) {
                 var participants = $scope.depenses[i].participants.split("%");
-                $scope.depenses[i].splitted = participants;
+                $scope.depenses[i].splitted = [];
+                for (var j = 0; j < participants.length; j++) {
+                    $scope.depenses[i].splitted.push({username: (participants[j].split("/"))[0] , id: (participants[j].split("/"))[1]});
+                }
             }
+            $scope.calculateBalance();
+        }, function myError(response) {
+        }
+    );
+  };
+
+  function findPayeurIndex(usernamePayeur) {
+    for (var i = 0; i < $scope.members.length; i++) {
+        if ($scope.members[i].username == usernamePayeur)
+            return i;
+    }
+  }
+  $scope.calculateBalance = function() {
+    for (var i = 0; i < $scope.members.length; i++) {
+        $scope.members[i].balance = 0;
+    }
+    for (var i = 0; i < $scope.depenses.length; i++) {
+        var montant = parseFloat($scope.depenses[i].montantDepense);
+        console.log($scope.depenses[i]);
+        var montantDivide = montant / ($scope.depenses[i].splitted.length + 1);
+        var indexPayeur = findPayeurIndex($scope.depenses[i].payeur);
+        // Calcul de la balance du payeur
+        $scope.members[indexPayeur].balance += montant - montantDivide;
+
+        // Calcul de la balance des participants
+        for (var j = 0; j < $scope.depenses[i].splitted.length; j++) {
+            var indexParticipant = findPayeurIndex($scope.depenses[i].splitted[j].username);
+            $scope.members[indexParticipant].balance -= montantDivide;
+        }
+    }
+    $scope.balanceLoaded = true;
+  }
+
+  $scope.loadMembers = function() {
+    $http({
+          method : "GET",
+          url : "http://localhost:8080/api/event/" + $stateParams.idEvent + "/member/" + $scope.user.id,
+    }).then(
+        function mySuccess(response) {
+            $scope.members = response.data
+            $scope.members.push({username: $scope.user.username, idUtilisateur: $scope.user.id});
         }, function myError(response) {
         }
     );
@@ -452,8 +499,14 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
     $state.go('event-details', {idEvent : $scope.idEvent});
   };
 
+  $scope.closeEvent = function() {
+
+  };
+  
   $scope.$on('$ionicView.enter', function() {
+      $scope.loadMembers();
       $scope.loadDepenses();
+      console.log($stateParams.idCreateur);
   });
 
 });

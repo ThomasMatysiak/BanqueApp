@@ -5,7 +5,15 @@
         </div>
     </div>
     <ion-content class="padding" style="margin-top: 50px;">
-        Pas de contenu
+        <div ng-if="!balanceLoaded" style="text-align: center;"ng-cloak>Balance en cours de calcul</div>
+        <button ng-click="closeEvent()" ng-if="idCreateur == user.id && balanceLoaded" class="button button-block button-assertive" ng-cloak>
+            Clôturer l'évènement
+        </button>
+        <div ng-if="balanceLoaded" class="card">
+            <div class="item item-text-wrap" ng-repeat="member in members" style="text-align: center;">
+                {{ member.username }} : {{ member.balance }}€
+            </div>
+        </div>
     </ion-content>
     <div class="bar bar-footer" style="padding: 0 0 0 0;display:table;height:35px !important;">
         <div style="cursor:pointer;font-weight: bold;width: 50%;text-align: center;vertical-align: middle;display: table-cell;" ng-click="goToDetail()"><i class="icon ion-clipboard"></i></div>

@@ -82,7 +82,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     templateUrl: './templates/event-balance.html',
     controller: 'EventBalanceCtrl',
     params: {
-        idEvent: null
+        idEvent: null,
+        idCreateur: null
     }
   });
 
