@@ -34,7 +34,7 @@
             <div class="item item-divider">
                 Historique des dépenses
             </div>
-            <div class="item" ng-if="depenses.length == 0" ng-cloak>
+            <div class="item" ng-if="depenses.length == 0" style="text-align: center;" ng-cloak>
                 Pas de dépense actuellement
             </div>
             <div class="item" ng-if="depenses.length > 0" ng-repeat="depense in depenses" ng-class="{'lastElement':$last}" ng-cloak>

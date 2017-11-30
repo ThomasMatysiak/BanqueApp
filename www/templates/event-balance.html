@@ -14,6 +14,16 @@
                 {{ member.username }} : {{ member.balance }}€
             </div>
         </div>
+        <div class="item item-divider" style="text-align: center;">
+            Transactions
+        </div>
+        <div class="item" ng-if="transactions.length == 0" style="text-align: center;" ng-cloak>
+            Pas de transaction actuellement
+        </div>
+        <div class="item" ng-if="depenses.length > 0" ng-repeat="transaction in transactions" ng-class="{'lastElement':$last}" ng-cloak>
+            <div style="text-align: center;"><span style="font-weight: bold;">{{ transaction.usernameDonneur }}</span> doit <span style="font-weight: bold;">{{ transaction.montant}}€ </span>à</div>
+            <div style="text-align: center;"><span style="font-weight: bold;">{{ transaction.usernameReceveur }} </span></div>
+        </div>
     </ion-content>
     <div class="bar bar-footer" style="padding: 0 0 0 0;display:table;height:35px !important;">
         <div style="cursor:pointer;font-weight: bold;width: 50%;text-align: center;vertical-align: middle;display: table-cell;" ng-click="goToDetail()"><i class="icon ion-clipboard"></i></div>

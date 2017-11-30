@@ -1,5 +1,5 @@
 angular.module('starter.controllers', ['ui.router', 'ionic'])
-
+.value('baseUrl', "http://localhost:8080")
 .controller('LoginCtrl', function($scope, $state, $http, $timeout, UserService, SessionService, $ionicHistory) {
   $scope.data = {
     password: null,
@@ -415,8 +415,10 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   $scope.depenses = null;
   $scope.members = null;
   $scope.balanceLoaded = false;
+  $scope.depenseReady = false;
   $scope.idEvent = $stateParams.idEvent;
   $scope.idCreateur = $stateParams.idCreateur;
+  $scope.transactions = [];
 
   $scope.disconnect = function() {
     $scope.alertPopup.close();
@@ -449,7 +451,7 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
                     $scope.depenses[i].splitted.push({username: (participants[j].split("/"))[0] , id: (participants[j].split("/"))[1]});
                 }
             }
-            $scope.calculateBalance();
+            $scope.depenseReady = true;
         }, function myError(response) {
         }
     );
@@ -467,7 +469,6 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
     }
     for (var i = 0; i < $scope.depenses.length; i++) {
         var montant = parseFloat($scope.depenses[i].montantDepense);
-        console.log($scope.depenses[i]);
         var montantDivide = montant / ($scope.depenses[i].splitted.length + 1);
         var indexPayeur = findPayeurIndex($scope.depenses[i].payeur);
         // Calcul de la balance du payeur
@@ -480,7 +481,87 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
         }
     }
     $scope.balanceLoaded = true;
+  };
+
+  function getIndexOfMinusDette(dettes) {
+    var minus = 0
+    var index = null;
+    for (var i = 0; i < dettes.length; i++) {
+        if (dettes[i].balance < minus) {
+            index = i;
+            minus = dettes[i].balance;
+        }
+    }
+    return index;
   }
+
+  function getIndexOfMaxiCredit(credits) {
+    var maxi = 0
+    var index = null;
+    for (var i = 0; i < credits.length; i++) {
+        if (credits[i].balance > maxi) {
+            index = i;
+            maxi = credits[i].balance;
+        }
+    }
+    return index;
+  }
+  $scope.calculateTransaction = function() {
+    var dettes = [];
+    var credits = [];
+    for (var i = 0; i < $scope.members.length; i++) {
+        if ($scope.members[i].balance < 0) {
+            dettes.push({idUtilisateur: $scope.members[i].idUtilisateur, username: $scope.members[i].username, balance: $scope.members[i].balance});
+        }
+        if ($scope.members[i].balance > 0) {
+            credits.push({idUtilisateur: $scope.members[i].idUtilisateur, username: $scope.members[i].username, balance: $scope.members[i].balance});
+        }
+    }
+
+    while (dettes.length > 0 && credits.length > 0) {
+        var minusIndex = getIndexOfMinusDette(dettes);
+        var maxiIndex = getIndexOfMaxiCredit(credits);
+
+        if (Math.abs(dettes[minusIndex].balance) >= credits[maxiIndex].balance) {
+            $scope.transactions.push(
+                {
+                    idDonneur: dettes[minusIndex].idUtilisateur,
+                    usernameDonneur: dettes[minusIndex].username,
+                    idReceveur: credits[maxiIndex].idUtilisateur,
+                    usernameReceveur: credits[maxiIndex].username,
+                    montant: credits[maxiIndex].balance
+                }
+            );
+            dettes[minusIndex].balance += credits[maxiIndex].balance;
+            credits[maxiIndex].balance = 0;
+            if (dettes[minusIndex].balance == 0) {
+                dettes.splice(minusIndex, 1);
+            }
+            if (credits[maxiIndex] == 0) {
+                credits.splice(maxiIndex, 0);
+            }
+        }
+        else {
+            $scope.transactions.push(
+                {
+                    idDonneur: dettes[minusIndex].idUtilisateur,
+                    usernameDonneur: dettes[minusIndex].username,
+                    idReceveur: credits[maxiIndex].idUtilisateur,
+                    usernameReceveur: credits[maxiIndex].username,
+                    montant: Math.abs(dettes[minusIndex].balance)
+                }
+            );
+            credits[maxiIndex].balance -= Math.abs(dettes[minusIndex].balance);
+            dettes[minusIndex].balance = 0;
+            if (dettes[minusIndex].balance == 0) {
+                dettes.splice(minusIndex, 1);
+            }
+            if (credits[maxiIndex] == 0) {
+                credits.splice(maxiIndex, 0);
+            }
+        }
+    }
+  };
 
   $scope.loadMembers = function() {
     $http({
@@ -502,11 +583,22 @@ angular.module('starter.controllers', ['ui.router', 'ionic'])
   $scope.closeEvent = function() {
 
   };
-  
+
+  $scope.$watch('balanceLoaded', function(newval, oldval){
+      if (newval) {
+        $scope.calculateTransaction();
+      }
+  }, true);
+
+  $scope.$watch('depenseReady', function(newval, oldval) {
+    if (newval) {
+        $scope.calculateBalance();
+    }
+  }, true);
+
   $scope.$on('$ionicView.enter', function() {
       $scope.loadMembers();
       $scope.loadDepenses();
-      console.log($stateParams.idCreateur);
   });
 
 });
